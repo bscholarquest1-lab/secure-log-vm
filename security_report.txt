@@ -1,0 +1,13 @@
+==================================================
+AUTOMATED INCIDENT RESPONSE REPORT - 2026-10-03
+==================================================
+
+[+] Total Malicious Events Flagged: 5
+[+] Unique Offending IP Addresses Isolated: ['203.0.113.5', '198.51.100.44', '198.51.100.12']
+
+--- DETAILED INCIDENT LOG ---
+[ALERT] 2026-09-24 10:16:11 WARNING Invalid password attempt for user 'root' from 203.0.113.5
+[ALERT] 2026-09-24 10:16:15 WARNING Invalid password attempt for user 'root' from 203.0.113.5
+[ALERT] 2026-09-24 10:16:20 WARNING Invalid password attempt for user 'root' from 203.0.113.5
+[ALERT] 2026-09-24 10:18:45 CRITICAL Database unauthorized access attempt from 198.51.100.12
+[ALERT] 2026-09-24 11:02:14 WARNING Invalid password attempt for user 'guest' from 198.51.100.44
