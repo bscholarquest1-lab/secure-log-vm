@@ -7,11 +7,6 @@ R_PC = 8    # Program Counter
 R_COND = 9  # Condition Flags
 R_COUNT = 10
 
-# --- Condition Flag Signatures ---
-FL_POS = 1 << 0
-FL_ZRO = 1 << 1
-FL_NEG = 1 << 2
-
 # --- Custom Opcodes ---
 OP_BR = 0
 OP_ADD = 1
@@ -26,6 +21,13 @@ OP_LDI = 10
 OP_JMP = 12
 OP_HALT = 0xF
 
+# 🛑 SIMULATED THREAT INTELLIGENCE FEED (Known Malicious IP Blocklist)
+KNOWN_MALICIOUS_IPS = {
+    "203.0.113.5": "Threat Group Alpha - Active SSH Brute-Forcing Campaign",
+    "198.51.100.12": "State-Sponsored Actor - Critical Database Injection Target",
+    "185.220.101.4": "Known Tor Exit Node - Automated Vulnerability Scanner"
+}
+
 # Initialize CPU state and 65,536 words of Virtual RAM
 memory = [0] * (1 << 16)
 reg = [0] * R_COUNT
@@ -35,26 +37,16 @@ def sign_extend(x, bit_count):
         x |= (0xFFFF << bit_count)
     return x & 0xFFFF
 
-def update_flags(r):
-    if reg[r] == 0:
-        reg[R_COND] = FL_ZRO
-    elif reg[r] & 0x8000: # Check sign bit
-        reg[R_COND] = FL_NEG
-    else:
-        reg[R_COND] = FL_POS
-
 def load_binary_payload(filepath):
     if not os.path.exists(filepath):
         print(f"Error: Payload file '{filepath}' not found.")
         return False
     
     with open(filepath, "rb") as f:
-        # Read the 16-bit origin loading address (0x3000)
         origin_bytes = f.read(2)
         if not origin_bytes: return False
         origin = struct.unpack(">H", origin_bytes)[0]
         
-        # Load the remaining data words into memory array cells
         address = origin
         while True:
             word_bytes = f.read(2)
@@ -68,7 +60,7 @@ def run_vm(payload_path):
     if not load_binary_payload(payload_path):
         return
         
-    reg[R_PC] = 0x3000 # Set execution entry target
+    reg[R_PC] = 0x3000 
     running = True
     
     print("\n--- 🛡️ VIRTUAL MACHINE SECURITY SANDBOX LAUNCHED ---")
@@ -85,22 +77,34 @@ def run_vm(payload_path):
         if op == OP_LDI:
             r0 = (instr >> 9) & 0x7
             pc_offset = sign_extend(instr & 0x1FF, 9)
-            # Indirect pointer read logic to extract text logs safely
             target_addr = memory[(reg[R_PC] + pc_offset) & 0xFFFF]
             
-            # Print the extracted threat payload characters using Memory-Mapped tracking!
-            print("[VM Sandbox Analysis - Extracting Threat Signature]: ", end="")
+            # Extract characters from the isolated memory array
+            extracted_chars = []
             while memory[target_addr] != 0:
-                print(chr(memory[target_addr] & 0xFF), end="")
+                extracted_chars.append(chr(memory[target_addr] & 0xFF))
                 target_addr += 1
-            print() # Newline
+            
+            full_payload_string = "".join(extracted_chars)
+            print(f"[VM Sandbox Analysis - Extracted Raw Stream]: {full_payload_string}")
+            
+            # 🔍 BROADCAST MATCH CHECK: Split and cross-reference against Threat Intel database
+            individual_ips = [ip.strip() for ip in full_payload_string.split(",")]
+            
+            print("\n🔍 --- RUNNING AUTOMATED THREAT BLOCKLIST INTEGRITY SCANS ---")
+            for ip in individual_ips:
+                if ip in KNOWN_MALICIOUS_IPS:
+                    print(f"🚨 [ALERT - MATCH FOUND]: IP {ip} matched threat signature base!")
+                    print(f"   ⚠️  Intelligence Context: {KNOWN_MALICIOUS_IPS[ip]}")
+                else:
+                    print(f"✅ [CLEAN]: IP {ip} passed blocklist database signature scan.")
+            print("-------------------------------------------------------------\n")
             
         elif op == OP_HALT:
             print("--- HALT INSTRUCTION REACHED. SANDBOX ISOLATION COMPLETE. ---\n")
             running = False
             
         else:
-            # Fallback handler for unmapped basic instructions
             pass
 
 if __name__ == "__main__":
