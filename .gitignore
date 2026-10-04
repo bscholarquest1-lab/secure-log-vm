@@ -1,55 +1,37 @@
-# Prerequisites
-*.d
+# ==========================================
+# 🛡️ Secure Log VM Project GitIgnore Contract
+# ==========================================
 
-# Object files
-*.o
-*.ko
-*.obj
-*.elf
+# --- Target Machine-Specific IDE Configurations ---
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
 
-# Linker output
-*.ilk
-*.map
-*.exp
+# --- Automated Language Build & Compiler Artifacts ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.tox/
+.venv/
+venv/
+ENV/
 
-# Precompiled Headers
-*.gch
-*.pch
-
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
-
-# Executables
+# --- Local Compiled Binary Bin Executables ---
+# (Keeps your clean portable code separated from laptop binaries)
 *.exe
 *.out
 *.app
-*.i*86
-*.x86_64
-*.hex
+*.o
+*.obj
+my_vm
 
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
+# --- Temporary Host System Traces ---
+.DS_Store
+Thumbs.db
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
-
-# debug information files
-*.dwo
